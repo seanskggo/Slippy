@@ -15,12 +15,41 @@ import sys
 args = {
     "replace_file_with_output": False,
     "print_input_lines": True,
-    "script_file": None,
     "sed_command": None,
     "files": []
 }
 
-args = sys.argv[1:]
+arg_list = sys.argv[1:]
+
+if len(arg_list) < 1:
+    print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]")
+    exit(1)
+
+# If -i is enabled
+if '-i' in arg_list:
+    arg_list.pop(0)
+    args["replace_file_with_output"] = True
+
+if '-n' in arg_list:
+    arg_list.pop(0)
+    args["print_input_lines"] = False
+
+if '-f' in arg_list:
+    arg_list.pop(0)
+    file = arg_list.pop(0)
+    try:
+        with open(file, 'r') as f:
+            command = f.read()
+    except:
+        print("slippy: error")
+        exit(1)
+    args["sed_command"] = command
+else:
+    command = arg_list.pop(0)
+    args["sed_command"] = command
+
+args["files"] = arg_list
+
 print(args)
 
 ######################################################
