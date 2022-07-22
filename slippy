@@ -14,7 +14,9 @@ from sed_parser import SedParser
 
 args_parser = ArgsParser(sys.argv[1:])
 
-commands = SedParser(args_parser.get_sed_command())
+commands = SedParser(args_parser.get_sed_command()).get_commands()
+
+print(commands)
 
 ######################################################
 # Subset 0

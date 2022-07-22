@@ -4,10 +4,12 @@
 # Argument Parser Class
 ######################################################
 
+import sys
+
 class ArgsParser():
     def __init__(self, arg_list):
         if len(arg_list) < 1:
-            print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]")
+            print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]", file=sys.stderr)
             exit(1)
 
         self.replace_file_with_output = False
@@ -31,7 +33,7 @@ class ArgsParser():
                 with open(file, 'r') as f:
                     command = f.read()
             except:
-                print("slippy: error")
+                print("slippy: error", file=sys.stderr)
                 exit(1)
             self.sed_command = command
         else:
