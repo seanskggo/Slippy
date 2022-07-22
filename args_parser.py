@@ -6,7 +6,6 @@
 
 class ArgsParser():
     def __init__(self, arg_list):
-
         if len(arg_list) < 1:
             print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]")
             exit(1)
