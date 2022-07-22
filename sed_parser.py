@@ -14,10 +14,6 @@ class SedParser():
 
         self.commands = list(map(format_command, self.commands))
 
-        # if len(arg_list) < 1:
-        #     print("slippy: command line: invalid command")
-        #     exit(1)
-
     def get_commands(self):
         return self.commands
 
@@ -28,19 +24,41 @@ class SedParser():
 
 def format_command(cmd):
 
-    valid_postfix = ['q', 'p', 'd']
-    valid_prefix = ['s']
-
-    # Case 1: p
-    if cmd[-1] == 'p':
-        return 'p'
-    elif cmd[-1] == 'q':
-        return 'q'  
-    elif cmd[-1] == 'd':
-        return 'd'
-    elif cmd[0] == 's':
-        return 's'
-    else:
+    def throw_error():
         print("slippy: command line: invalid command", file=sys.stderr)
         exit(1)
+
+    def return_command_object(cmd, val):
+        if is_cmd_a_regex(val):
+            return { "command": cmd, "value": val,"is_regex": True }
+        else:
+            try: 
+                return { "command": cmd, "value": int(val), "is_regex": False }
+            except:
+                throw_error()
+
+    def is_cmd_a_regex(cmd):
+        if cmd[0] == '/' and cmd[-1] == '/' and len(cmd) >= 2:
+            return True
+        else:
+            return False
+
+    def return_sub_object(cmd, val):
+        vals = val.split('/')
+        if not (len(vals) == 4 and vals[0] == '' and vals[-1] == ''):
+            throw_error()
+        return { "command": cmd, "src": vals[1], "dest": vals[2] }
+
+    if cmd == '': 
+        return { "command": '', "value": '', "is_regex": False }
+    elif cmd[-1] == 'p':
+        return return_command_object('p', cmd[:-1])
+    elif cmd[-1] == 'q':
+        return return_command_object('q', cmd[:-1])
+    elif cmd[-1] == 'd':
+        return return_command_object('d', cmd[:-1])
+    elif cmd[0] == 's':
+        return return_sub_object('s', cmd[1:])
+    else:
+        throw_error()
     
