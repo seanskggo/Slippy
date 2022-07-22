@@ -29,6 +29,8 @@ def format_command(cmd):
         exit(1)
 
     def return_command_object(cmd, val):
+        if val == '':
+            return { "command": cmd, "value": val, "is_regex": False }
         if is_cmd_a_regex(val):
             return { "command": cmd, "value": val,"is_regex": True }
         else:
@@ -38,7 +40,7 @@ def format_command(cmd):
                 throw_error()
 
     def is_cmd_a_regex(cmd):
-        if cmd[0] == '/' and cmd[-1] == '/' and len(cmd) >= 2:
+        if len(cmd) >= 2 and cmd[0] == '/' and cmd[-1] == '/':
             return True
         else:
             return False
