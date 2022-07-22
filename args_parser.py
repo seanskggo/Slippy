@@ -41,8 +41,14 @@ class ArgsParser():
 
         self.files = arg_list
 
-    def getyaboi(self):
-        print(self.replace_file_with_output)
-        print(self.print_input_lines)
-        print(self.sed_command)
-        print(self.files)
+    def should_replace_file_with_output(self):
+        return self.replace_file_with_output
+
+    def should_print_input_lines(self): 
+        return self.print_input_lines
+
+    def get_sed_command(self):
+        return self.sed_command
+
+    def get_files(self):
+        return self.files
