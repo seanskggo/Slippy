@@ -39,9 +39,15 @@ def q(command, line, count):
         return False if count == command['value'] else True
 
 # Handle p case. Return a boolean to indicate termination or 
-def p(command, line):
+def p(command, line, count):
     print_input(line)
-    print(line, end='')
+    if command['is_regex']:
+        if re.search(command['value'], line):
+            print(line, end='')        
+    else:
+        if count == command['value']:
+            print(line, end='')
+    return True
 
 ######################################################
 # Main
@@ -57,7 +63,7 @@ for line in sys.stdin:
 
     for command in commands:
         if command['command'] == 'p':
-            p(command, line)
+            running = p(command, line, count)
         elif command['command'] == 'q':
             running = q(command, line, count)
 
