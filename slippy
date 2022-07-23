@@ -49,6 +49,12 @@ def p(command, line, count):
             print(line, end='')
     return True
 
+def d(command, line, count):
+    pass
+
+def s(command, line, count):
+    pass
+
 ######################################################
 # Main
 ######################################################
@@ -66,6 +72,10 @@ for line in sys.stdin:
             running = p(command, line, count)
         elif command['command'] == 'q':
             running = q(command, line, count)
+        elif command['command'] == 'd':
+            running = d(command, line, count)
+        elif command['command'] == 's':
+            running = s(command, line, count)
 
     count += 1
 
