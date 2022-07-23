@@ -50,7 +50,13 @@ def p(command, line, count):
     return True
 
 def d(command, line, count):
-    pass
+    if command['is_regex']:
+        if not re.search(command['value'], line):
+            print_input(line)  
+    else:
+        if count != command['value']:
+            print_input(line)
+    return True
 
 def s(command, line, count):
     pass
