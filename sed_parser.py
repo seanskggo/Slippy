@@ -19,7 +19,7 @@ class SedParser():
 
 ######################################################
 # Command Fomatter
-# - Given a sed command, returns an object with details
+# => Given a sed command, returns an object with details
 ######################################################
 
 def format_command(cmd):
@@ -29,8 +29,6 @@ def format_command(cmd):
         exit(1)
 
     def return_command_object(cmd, val):
-        if val == '':
-            return { "command": cmd, "value": val, "is_regex": False }
         if is_cmd_a_regex(val):
             return { "command": cmd, "value": val.strip('/'), "is_regex": True }
         else:
@@ -40,7 +38,7 @@ def format_command(cmd):
                 throw_error()
 
     def is_cmd_a_regex(cmd):
-        if len(cmd) >= 2 and cmd[0] == '/' and cmd[-1] == '/':
+        if len(cmd) >= 2 and cmd[0] == '/' and cmd[-1] == '/' or cmd == '':
             return True
         else:
             return False
