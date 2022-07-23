@@ -17,18 +17,50 @@ args_parser = ArgsParser(sys.argv[1:])
 commands = SedParser(args_parser.get_sed_command()).get_commands()
 
 ######################################################
-# Handle Cases
+# Helpers
 ######################################################
 
-for line in sys.stdin:
-
+def print_input(line):
     # Print input if required
     if (args_parser.should_print_input_lines()):
         print(line, end='')
 
+######################################################
+# Cases
+######################################################
+
+# Handle q case. Return a boolean to indicate termination or continuation
+def q(command, line):
+    print_input(line)
+    if command['is_regex']:
+        return True
+    elif not command['is_regex'] and count == command['value']:
+        return False
+    return True
+
+# Handle p case. Return a boolean to indicate termination or 
+def p(command, line):
+    print_input(line)
+    print(line, end='')
+
+######################################################
+# Main
+######################################################
+
+count = 0
+running = True
+
+for line in sys.stdin:
+
+    if not running:
+        break
+
     for command in commands:
+
         if command['command'] == 'p':
-            break
+            p(command, line)
+
         elif command['command'] == 'q':
-            break
+            running = q(command, line)
+
 
