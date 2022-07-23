@@ -30,7 +30,7 @@ def print_input(line):
 ######################################################
 
 # Handle q case. Return a boolean to indicate termination or continuation
-def q(command, line):
+def q(command, line, count):
     print_input(line)
     if command['is_regex']:
         return True
@@ -47,7 +47,7 @@ def p(command, line):
 # Main
 ######################################################
 
-count = 0
+count = 1
 running = True
 
 for line in sys.stdin:
@@ -56,11 +56,11 @@ for line in sys.stdin:
         break
 
     for command in commands:
-
         if command['command'] == 'p':
             p(command, line)
-
         elif command['command'] == 'q':
-            running = q(command, line)
+            running = q(command, line, count)
+
+    count += 1
 
 
