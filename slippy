@@ -5,6 +5,7 @@
 ######################################################
 
 import sys
+import re
 from args_parser import ArgsParser
 from sed_parser import SedParser
 
@@ -33,10 +34,9 @@ def print_input(line):
 def q(command, line, count):
     print_input(line)
     if command['is_regex']:
-        return True
-    elif not command['is_regex'] and count == command['value']:
-        return False
-    return True
+        return False if re.search(command['value'], line) else True
+    else:
+        return False if count == command['value'] else True
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line):

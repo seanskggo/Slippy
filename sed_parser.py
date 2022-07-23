@@ -32,7 +32,7 @@ def format_command(cmd):
         if val == '':
             return { "command": cmd, "value": val, "is_regex": False }
         if is_cmd_a_regex(val):
-            return { "command": cmd, "value": val,"is_regex": True }
+            return { "command": cmd, "value": val.strip('/'), "is_regex": True }
         else:
             try: 
                 return { "command": cmd, "value": int(val), "is_regex": False }
