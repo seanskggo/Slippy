@@ -17,7 +17,6 @@ class ArgsParser():
         self.sed_command = None
         self.files = []
 
-        # If -i is enabled
         if '-i' in arg_list:
             arg_list.pop(0)
             self.replace_file_with_output = True

@@ -6,6 +6,8 @@
 # 
 # Testing commands:
 # - q - quit command
+#
+# ASSUMES ALL RELEVANT FILES FRO SLIPPY ARE IN PATH
 ######################################################################
 
 ######################################################################
@@ -14,7 +16,7 @@
 
 test_commands () {
 
-    mkdir temp && cd temp || exit
+    mkdir temp && cp slippy args_parser.py sed_parser.py temp && cd temp || exit
 
     echo "test" | ./slippy 'q'
 
@@ -48,7 +50,11 @@ then
     echo "PASSED"
 else
     echo "FAILED"
-    diff a b 
+    echo "--------------- ANSWER ---------------"
+    cat a
+    echo "-------------- EXPECTED --------------"
+    cat b
+    echo "--------------------------------------"
 fi
 
 rm a b

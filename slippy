@@ -20,5 +20,15 @@ commands = SedParser(args_parser.get_sed_command()).get_commands()
 # Handle Cases
 ######################################################
 
-for command in commands:
-    print(command)
+for line in sys.stdin:
+
+    # Print input if required
+    if (args_parser.should_print_input_lines()):
+        print(line, end='')
+
+    for command in commands:
+        if command['command'] == 'p':
+            break
+        elif command['command'] == 'q':
+            break
+
