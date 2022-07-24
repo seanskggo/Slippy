@@ -53,6 +53,8 @@ def format_command(cmd):
         vals = val.split('/')
         if not (len(vals) == 4 and vals[0] == '' and vals[-1] == ''):
             throw_error()
+        if vals[1] == '' and vals[2] == '':
+            throw_error()
         return { "command": cmd, "src": vals[1], "dest": vals[2] }
 
     if cmd == '': 
