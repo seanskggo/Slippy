@@ -25,12 +25,12 @@ class SedParser():
 def format_command(cmd):
 
     def return_command_object(cmd, val):
-        if is_cmd_a_regex(val):
+        if not is_convertible_to_int(val):
             return { "command": cmd, "value": val.strip('/'), "is_regex": True }
-        else:
-            if not is_convertible_to_int(val) or int(val) <= 0:
-                throw_error()
+        elif int(val) > 0:
             return { "command": cmd, "value": int(val), "is_regex": False }
+        else:
+            throw_error()
 
     def return_sub_object(cmd, val):
         vals = val.split('/')
@@ -73,14 +73,6 @@ def is_convertible_to_int(num):
     except ValueError:
         return False
     return True
-
-# Given a potential sed regex, check if it is a regex i.e. is the
-# string wrapped in '/'?
-def is_cmd_a_regex(cmd):
-    if len(cmd) >= 2 and cmd[0] == '/' and cmd[-1] == '/' or cmd == '':
-        return True
-    else:
-        return False
 
 # Given a command regex of form <prefix>command<postfix>, 
 # return a tuple of three elements of (prefix, command, postfix)
