@@ -28,14 +28,20 @@ def format_command(cmd):
         print("slippy: command line: invalid command", file=sys.stderr)
         exit(1)
 
+    def is_convertible_to_int(num):
+        try:
+            int(num)
+        except ValueError:
+            return False
+        return True
+
     def return_command_object(cmd, val):
         if is_cmd_a_regex(val):
             return { "command": cmd, "value": val.strip('/'), "is_regex": True }
         else:
-            try: 
-                return { "command": cmd, "value": int(val), "is_regex": False }
-            except:
+            if not is_convertible_to_int(val) or int(val) <= 0:
                 throw_error()
+            return { "command": cmd, "value": int(val), "is_regex": False }
 
     def is_cmd_a_regex(cmd):
         if len(cmd) >= 2 and cmd[0] == '/' and cmd[-1] == '/' or cmd == '':
