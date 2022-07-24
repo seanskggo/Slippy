@@ -17,35 +17,41 @@ args_parser = ArgsParser(sys.argv[1:])
 commands = SedParser(args_parser.get_sed_command()).get_commands()
 
 ######################################################
+# Helpers
+######################################################
+
+def print_input(line):
+    # Print input if required
+    if (args_parser.should_print_input_lines()):
+        print(line, end='')
+
+# Given a line of string (line) and affix object ({value, is_regex}), 
+# check if it matches the given number or regex (value)
+def is_line_and_value_matching(line, affix_object, count):
+    value, is_regex = affix_object.values()
+    if is_regex and re.search(value, line) or count == value:
+        return True
+    return False
+
+######################################################
 # Cases
 ######################################################
 
 # Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count):
     print_input(line)
-    if command['is_regex']:
-        return False if re.search(command['value'], line) else True
-    else:
-        return False if count == command['value'] else True
+    return not is_line_and_value_matching(line, command['prefix'], count)
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count):
     print_input(line)
-    if command['is_regex']:
-        if re.search(command['value'], line):
-            print(line, end='')        
-    else:
-        if count == command['value']:
-            print(line, end='')
+    if is_line_and_value_matching(line, command['prefix'], count):
+        print(line, end='')
     return True
 
 def d(command, line, count):
-    if command['is_regex']:
-        if not re.search(command['value'], line):
-            print_input(line)  
-    else:
-        if count != command['value']:
-            print_input(line)
+    if not is_line_and_value_matching(line, command['prefix'], count):
+        print_input(line)  
     return True
 
 def s(command, line, count):
@@ -64,8 +70,6 @@ for line in sys.stdin:
         break
 
     for command in commands:
-        print(command)
-        continue
         if command['command'] == 'p':
             running = p(command, line, count)
         elif command['command'] == 'q':
@@ -78,12 +82,3 @@ for line in sys.stdin:
             print_input(line)
 
     count += 1
-
-######################################################
-# Helpers
-######################################################
-
-def print_input(line):
-    # Print input if required
-    if (args_parser.should_print_input_lines()):
-        print(line, end='')
