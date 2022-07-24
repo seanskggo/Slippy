@@ -67,11 +67,11 @@ def is_convertible_to_int(num):
 # e.g. 2s/a// => (2, s, '/a//')
 def get_pre_and_postfix(sed, cmd):
     prefix = re.search(f'^(|[0-9]+|\/.+\/){cmd}', sed)
-    postfix = re.search('\/.+\/.*\/g?$', sed)
+    postfix = re.search(f'{cmd}(\/.+\/.*\/g?)$', sed)
     return (
         prefix.group(1) if prefix else '', 
         cmd, 
-        postfix.group() if postfix else ''
+        postfix.group(1) if postfix else ''
     )
 
 # Given an affix, categorise it into either a number or a regex
