@@ -78,7 +78,7 @@ def get_pre_and_postfix(sed, cmd):
 # and return the filtered result in an object
 def categorise_affix(affix):
     if not is_convertible_to_int(affix):
-        return { "affix": affix.strip('/'), "is_regex": True }
+        return { "affix": re.sub('\/(.*)\/', '\g<1>', affix), "is_regex": True }
     elif int(affix) > 0:
         return { "affix": int(affix), "is_regex": False }
     else:
