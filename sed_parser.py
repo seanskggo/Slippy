@@ -52,7 +52,7 @@ def format_command(sed):
 # Throw slippy error and exit
 def throw_error():
     print("slippy: command line: invalid command", file=sys.stderr)
-    exit(1)
+    sys.exit(1)
 
 # Check if string is convertible to int
 def is_convertible_to_int(num):

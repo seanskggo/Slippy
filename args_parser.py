@@ -33,7 +33,7 @@ class ArgsParser():
                     command = f.read()
             except:
                 print("slippy: error", file=sys.stderr)
-                exit(1)
+                sys.exit(1)
             self.sed_command = command
         else:
             command = arg_list.pop(0)
