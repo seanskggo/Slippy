@@ -82,6 +82,8 @@ for line in sys.stdin:
             running = d(command, line, count)
         elif command['command'] == 's':
             running = s(command, line, count)
+        elif command['command'] == '':
+            print_input(line)
 
     count += 1
 
