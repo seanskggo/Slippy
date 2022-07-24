@@ -40,7 +40,7 @@ def format_command(sed):
         return format_sed(sed, 'q')
     elif re.search('^(|[0-9]+|\/.+\/)d$', sed):
         return format_sed(sed, 'd')
-    elif re.search('^(|[0-9]+|\/.+\/)s\/.+\/.*\/$', sed):
+    elif re.search('^(|[0-9]+|\/.+\/)s\/.+\/.*\/g?$', sed):
         return format_sed(sed, 's')
     else:
         throw_error()
@@ -67,7 +67,7 @@ def is_convertible_to_int(num):
 # e.g. 2s/a// => (2, s, '/a//')
 def get_pre_and_postfix(sed, cmd):
     prefix = re.search(f'^(|[0-9]+|\/.+\/){cmd}', sed)
-    postfix = re.search('\/.+\/.*\/$', sed)
+    postfix = re.search('\/.+\/.*\/g?$', sed)
     return (
         prefix.group(1) if prefix else '', 
         cmd, 

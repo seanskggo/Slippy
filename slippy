@@ -57,7 +57,10 @@ def d(command, line, count):
 def s(command, line, count):
     if is_line_and_value_matching(line, command['prefix'], count):
         src, dest = command['postfix']['affix'].split('/')
-        print_input(re.sub(src, dest, line, count=1))
+        if dest and dest[-1] == 'g':
+            print_input(re.sub(src, dest[:-1], line))    
+        else:
+            print_input(re.sub(src, dest, line, count=1))
     else:
         print_input(line) 
     return True
