@@ -55,7 +55,12 @@ def d(command, line, count):
     return True
 
 def s(command, line, count):
-    pass
+    if is_line_and_value_matching(line, command['prefix'], count):
+        src, dest = command['postfix']['affix'].split('/')
+        print_input(re.sub(src, dest, line, count=1))
+    else:
+        print_input(line) 
+    return True
 
 ######################################################
 # Main
