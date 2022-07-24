@@ -74,6 +74,8 @@ for line in sys.stdin:
         break
 
     for command in commands:
+        print(command)
+        continue
         if command['command'] == 'p':
             running = p(command, line, count)
         elif command['command'] == 'q':

@@ -22,38 +22,26 @@ class SedParser():
 # => Given a sed command, returns an object with details
 ######################################################
 
-def format_command(cmd):
+def format_command(sed):
 
-    def return_command_object(cmd, val):
-        if not is_convertible_to_int(val):
-            return { "command": cmd, "value": val.strip('/'), "is_regex": True }
-        elif int(val) > 0:
-            return { "command": cmd, "value": int(val), "is_regex": False }
-        else:
-            throw_error()
+    def format_sed(sed, cmd):
+        pre, cmd, post = get_pre_and_postfix(sed, cmd)
+        return {
+            "prefix": categorise_affix(pre),
+            "command": cmd,
+            "postfix": categorise_affix(post)
+        }
 
-    def return_sub_object(cmd, val):
-        vals = val.split('/')
-        if not (len(vals) == 4 and vals[0] == '' and vals[-1] == ''):
-            throw_error()
-        if vals[1] == '' and vals[2] == '':
-            throw_error()
-        return { "command": cmd, "value": 1, "is_regex": False, "src": vals[1], "dest": vals[2] }
-
-    if cmd == '': 
-        return { "command": '', "value": '', "is_regex": False }
-    elif re.search('^(|[0-9]+|\/.+\/)p', cmd):
-        pre, cmd, post = get_pre_and_postfix(cmd, 'p')
-        return return_command_object(cmd, pre)
-    elif re.search('^(|[0-9]+|\/.+\/)q', cmd):
-        pre, cmd, post = get_pre_and_postfix(cmd, 'q')
-        return return_command_object(cmd, pre)
-    elif re.search('^(|[0-9]+|\/.+\/)d', cmd):
-        pre, cmd, post = get_pre_and_postfix(cmd, 'd')
-        return return_command_object(cmd, pre)
-    elif re.search('^(|[0-9]+|\/.+\/)s\/.+\/\/', cmd):
-        pre, cmd, post = get_pre_and_postfix(cmd, 's')
-        return return_sub_object('s', cmd[1:])
+    if sed == '': 
+        return format_sed(sed, '')
+    elif re.search('^(|[0-9]+|\/.+\/)p', sed):
+        return format_sed(sed, 'p')
+    elif re.search('^(|[0-9]+|\/.+\/)q', sed):
+        return format_sed(sed, 'q')
+    elif re.search('^(|[0-9]+|\/.+\/)d', sed):
+        return format_sed(sed, 'd')
+    elif re.search('^(|[0-9]+|\/.+\/)s\/.+\/\/', sed):
+        return format_sed(sed, 's')
     else:
         throw_error()
     
@@ -85,3 +73,13 @@ def get_pre_and_postfix(sed, cmd):
         cmd, 
         postfix.group() if postfix else ''
     )
+
+# Given an affix, categorise it into either a number or a regex
+# and return the filtered result in an object
+def categorise_affix(affix):
+    if not is_convertible_to_int(affix):
+        return { "affix": affix.strip('/'), "is_regex": True }
+    elif int(affix) > 0:
+        return { "affix": int(affix), "is_regex": False }
+    else:
+        throw_error()
