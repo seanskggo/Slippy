@@ -14,17 +14,7 @@ from sed_parser import SedParser
 ######################################################
 
 args_parser = ArgsParser(sys.argv[1:])
-
 commands = SedParser(args_parser.get_sed_command()).get_commands()
-
-######################################################
-# Helpers
-######################################################
-
-def print_input(line):
-    # Print input if required
-    if (args_parser.should_print_input_lines()):
-        print(line, end='')
 
 ######################################################
 # Cases
@@ -89,4 +79,11 @@ for line in sys.stdin:
 
     count += 1
 
+######################################################
+# Helpers
+######################################################
 
+def print_input(line):
+    # Print input if required
+    if (args_parser.should_print_input_lines()):
+        print(line, end='')
