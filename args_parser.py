@@ -30,8 +30,8 @@ class ArgsParser():
             arg_list.pop(0)
             file = arg_list.pop(0)
             try:
-                with open(file, 'r') as f:
-                    command = f.read()
+                with open(file, 'r') as f: 
+                    command = re.sub('\n', ';', f.read()).strip(';')
             except:
                 print("slippy: error", file=sys.stderr)
                 sys.exit(1)
