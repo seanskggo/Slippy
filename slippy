@@ -72,7 +72,9 @@ def s(command, line, count):
 count = 1
 running = True
 
-for line in sys.stdin:
+file_inputs = args_parser.get_file_inputs() 
+
+for line in file_inputs if file_inputs else sys.stdin:
 
     if not running:
         break

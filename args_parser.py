@@ -43,7 +43,13 @@ class ArgsParser():
         self.sed_command = re.sub(' ', '', self.sed_command)
         self.sed_command = re.sub('#.*;', ';', self.sed_command)
         self.sed_command = re.sub('#.*', '', self.sed_command)
-        self.files = arg_list
+
+        input = []
+        for file in arg_list:
+            with open(file, 'r') as f:
+                for line in f:
+                    input.append(line)
+        self.files = input
 
     def should_replace_file_with_output(self):
         return self.replace_file_with_output
@@ -54,5 +60,5 @@ class ArgsParser():
     def get_sed_command(self):
         return self.sed_command
 
-    def get_files(self):
+    def get_file_inputs(self):
         return self.files
