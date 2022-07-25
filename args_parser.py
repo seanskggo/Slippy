@@ -5,6 +5,7 @@
 ######################################################
 
 import sys
+import re
 
 class ArgsParser():
     def __init__(self, arg_list):
@@ -39,6 +40,9 @@ class ArgsParser():
             command = arg_list.pop(0)
             self.sed_command = command
 
+        self.sed_command = re.sub(' ', '', self.sed_command)
+        self.sed_command = re.sub('#.*;', ';', self.sed_command)
+        self.sed_command = re.sub('#.*', '', self.sed_command)
         self.files = arg_list
 
     def should_replace_file_with_output(self):
