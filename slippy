@@ -33,6 +33,21 @@ def is_line_and_value_matching(line, affix_object, count):
         return True
     return False
 
+def handle_command(commands, line, count):
+    running = True
+    for command in commands:
+        if command['command'] == 'p':
+            running = p(command, line, count)
+        elif command['command'] == 'q':
+            running = q(command, line, count)
+        elif command['command'] == 'd':
+            running = d(command, line, count)
+        elif command['command'] == 's':
+            running = s(command, line, count)
+        elif command['command'] == '':
+            print_input(line)
+    return running
+
 ######################################################
 # Cases
 ######################################################
@@ -79,16 +94,6 @@ for line in file_inputs if file_inputs else sys.stdin:
     if not running:
         break
 
-    for command in commands:
-        if command['command'] == 'p':
-            running = p(command, line, count)
-        elif command['command'] == 'q':
-            running = q(command, line, count)
-        elif command['command'] == 'd':
-            running = d(command, line, count)
-        elif command['command'] == 's':
-            running = s(command, line, count)
-        elif command['command'] == '':
-            print_input(line)
+    running = handle_command(commands, line, count)
 
     count += 1
