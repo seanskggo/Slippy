@@ -34,15 +34,15 @@ def format_command(sed):
 
     if sed == '': 
         return format_sed(sed, '')
-    elif re.search('^(|[0-9]+|\/.+\/)p$', sed):
+    elif re.search('^\$?(|[0-9]+|\/.+\/)p$', sed):
         return format_sed(sed, 'p')
-    elif re.search('^(|[0-9]+|\/.+\/)q$', sed):
+    elif re.search('^\$?(|[0-9]+|\/.+\/)q$', sed):
         return format_sed(sed, 'q')
-    elif re.search('^(|[0-9]+|\/.+\/)d$', sed):
+    elif re.search('^\$?(|[0-9]+|\/.+\/)d$', sed):
         return format_sed(sed, 'd')
-    elif re.search('^(|[0-9]+|\/.+\/)s.*g?$', sed):
+    elif re.search('^\$?(|[0-9]+|\/.+\/)s.*g?$', sed):
         d = re.search('s(\S).*g?$', sed).group(1)
-        if not re.search(f'^(|[0-9]+|\/.+\/)s{d}.+{d}.*{d}g?$', sed):
+        if not re.search(f'^\$?(|[0-9]+|\/.+\/)s{d}.+{d}.*{d}g?$', sed):
             throw_error()
         return format_sed(sed, 's', d)
     else:
