@@ -86,15 +86,22 @@ def s(command, line, count):
 
 count = 1
 running = True
+buffer = [[args_parser.get_next_line(), False]]
 
 while True:
 
-    line = args_parser.get_next_line()
-
-    if not line:
+    if not buffer:
         break
-    
-    running = handle_command(commands, line, count)
+
+    # Populate buffer with next line
+    next_line = args_parser.get_next_line()
+    if not next_line:
+        buffer[-1][-1] = True
+    else:
+        buffer.append([next_line, False])
+
+    current_line, is_end = buffer.pop(0)
+    running = handle_command(commands, current_line, count)
     count += 1
 
     if not running: 
