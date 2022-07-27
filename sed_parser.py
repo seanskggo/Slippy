@@ -34,15 +34,15 @@ def format_command(sed):
 
     if sed == '': 
         return format_sed(sed, '')
-    elif re.search('^(\$|[0-9]+|\/.+\/)p$', sed):
+    elif re.search('^(|\$|[0-9]+|\/.+\/)p$', sed):
         return format_sed(sed, 'p')
-    elif re.search('^(\$|[0-9]+|\/.+\/)q$', sed):
+    elif re.search('^(|\$|[0-9]+|\/.+\/)q$', sed):
         return format_sed(sed, 'q')
-    elif re.search('^(\$|[0-9]+|\/.+\/)d$', sed):
+    elif re.search('^(|\$|[0-9]+|\/.+\/)d$', sed):
         return format_sed(sed, 'd')
-    elif re.search('^(\$|[0-9]+|\/.+\/)s.*g?$', sed):
+    elif re.search('^(|\$|[0-9]+|\/.+\/)s.*g?$', sed):
         d = re.search('s(\S).*g?$', sed).group(1)
-        if not re.search(f'^(\$|[0-9]+|\/.+\/)s{d}.+{d}.*{d}g?$', sed):
+        if not re.search(f'^(|\$|[0-9]+|\/.+\/)s{d}.+{d}.*{d}g?$', sed):
             throw_error()
         return format_sed(sed, 's', d)
     else:
@@ -81,6 +81,8 @@ def get_pre_and_postfix(sed, cmd, d):
 # and return the filtered result in an object
 def categorise_affix(affix, d):
     if not is_convertible_to_int(affix):
+        if affix == '$':
+            return { "affix": '$', "is_regex": False }
         aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d)
         return { "affix": aff[0] if len(aff) <= 1 else aff, "is_regex": True }
     elif int(affix) > 0:

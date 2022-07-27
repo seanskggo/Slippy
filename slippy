@@ -27,23 +27,23 @@ def print_input(line):
 
 # Given a line of string (line) and affix object ({value, is_regex}), 
 # check if it matches the given number or regex (value)
-def is_line_and_value_matching(line, affix_object, count):
+def is_line_and_value_matching(line, affix_object, count, is_end):
     value, is_regex = affix_object.values()
-    if is_regex and re.search(value, line) or count == value:
+    if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
         return True
     return False
 
-def handle_command(commands, line, count):
+def handle_command(commands, line, count, is_end):
     running = True
     for command in commands:
         if command['command'] == 'p':
-            running = p(command, line, count)
+            running = p(command, line, count, is_end)
         elif command['command'] == 'q':
-            running = q(command, line, count)
+            running = q(command, line, count, is_end)
         elif command['command'] == 'd':
-            running = d(command, line, count)
+            running = d(command, line, count, is_end)
         elif command['command'] == 's':
-            running = s(command, line, count)
+            running = s(command, line, count, is_end)
         elif command['command'] == '':
             print_input(line)
     return running
@@ -53,24 +53,24 @@ def handle_command(commands, line, count):
 ######################################################
 
 # Handle q case. Return a boolean to indicate termination or continuation
-def q(command, line, count):
+def q(command, line, count, is_end):
     print_input(line)
-    return not is_line_and_value_matching(line, command['prefix'], count)
+    return not is_line_and_value_matching(line, command['prefix'], count, is_end)
 
 # Handle p case. Return a boolean to indicate termination or 
-def p(command, line, count):
+def p(command, line, count, is_end):
     print_input(line)
-    if is_line_and_value_matching(line, command['prefix'], count):
+    if is_line_and_value_matching(line, command['prefix'], count, is_end):
         print(line, end='')
     return True
 
-def d(command, line, count):
-    if not is_line_and_value_matching(line, command['prefix'], count):
+def d(command, line, count, is_end):
+    if not is_line_and_value_matching(line, command['prefix'], count, is_end):
         print_input(line)  
     return True
 
-def s(command, line, count):
-    if is_line_and_value_matching(line, command['prefix'], count):
+def s(command, line, count, is_end):
+    if is_line_and_value_matching(line, command['prefix'], count, is_end):
         src, dest = command['postfix']['affix']
         if dest and dest[-1] == 'g':
             print_input(re.sub(src, dest[:-1], line))    
@@ -101,7 +101,7 @@ while True:
         buffer.append([next_line, False])
 
     current_line, is_end = buffer.pop(0)
-    running = handle_command(commands, current_line, count)
+    running = handle_command(commands, current_line, count, is_end)
     count += 1
 
     if not running: 
