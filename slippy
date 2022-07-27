@@ -87,13 +87,15 @@ def s(command, line, count):
 count = 1
 running = True
 
-file_inputs = args_parser.get_file_inputs() 
+while True:
 
-for line in file_inputs if file_inputs else sys.stdin:
+    line = args_parser.get_next_line()
 
-    if not running:
+    if not line:
         break
-
+    
     running = handle_command(commands, line, count)
-
     count += 1
+
+    if not running: 
+        break

@@ -17,6 +17,7 @@ class ArgsParser():
         self.print_input_lines = True
         self.sed_command = None
         self.files = []
+        self.is_stdin = False
 
         if '-i' in arg_list:
             arg_list.pop(0)
@@ -50,6 +51,8 @@ class ArgsParser():
                 for line in f:
                     input.append(line)
         self.files = input
+        if not self.files:
+            self.is_stdin = True
 
     def should_replace_file_with_output(self):
         return self.replace_file_with_output
@@ -62,3 +65,13 @@ class ArgsParser():
 
     def get_file_inputs(self):
         return self.files
+
+    def get_next_line(self):
+        if self.is_stdin:
+            line = sys.stdin.readline()
+            return line if line else None
+        else:
+            if self.files:
+                return self.files.pop(0)
+            else: 
+                return None
