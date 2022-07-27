@@ -69,7 +69,7 @@ def is_convertible_to_int(num):
 # return a tuple of three elements of (prefix, command, postfix)
 # e.g. 2s/a// => (2, s, '/a//')
 def get_pre_and_postfix(sed, cmd, d):
-    prefix = re.search(f'^(|[0-9]+|\/.+\/){cmd}', sed)
+    prefix = re.search(f'^(|\$|[0-9]+|\/.+\/){cmd}', sed)
     postfix = re.search(f'{cmd}({d}.+{d}.*{d}g?)$', sed)
     return (
         prefix.group(1) if prefix else '', 
