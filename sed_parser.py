@@ -84,10 +84,16 @@ def get_pre_and_postfix(sed, cmd, d):
 # and return the filtered result in an object
 def categorise_affix(affix, d):
     if not is_convertible_to_int(affix):
-        if affix == '$':
-            return { "affix": '$', "is_regex": False }
-        aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d)
-        return { "affix": aff[0] if len(aff) <= 1 else aff, "is_regex": True }
+        # Case 1: range prefix
+        if re.search('^([0-9]|\$),([0-9]|\$)$', affix):
+            start, end = affix[0], affix[-1]
+            return { "affix": [start, end], "is_regex": False }
+        # Case 2: non-range prefix
+        else:
+            if affix == '$':
+                return { "affix": '$', "is_regex": False }
+            aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d)
+            return { "affix": aff[0] if len(aff) <= 1 else aff, "is_regex": True }
     elif int(affix) > 0:
         return { "affix": int(affix), "is_regex": False }
     else:
