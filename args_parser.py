@@ -44,6 +44,7 @@ class ArgsParser():
         self.sed_command = re.sub(' ', '', self.sed_command)
         self.sed_command = re.sub('#.*;', ';', self.sed_command)
         self.sed_command = re.sub('#.*', '', self.sed_command)
+        self.sed_command = re.sub('\n', ';', self.sed_command)
 
         input = []
         for file in arg_list:
