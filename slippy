@@ -25,40 +25,40 @@ def throw_error():
     sys.exit(1)
 
 # Given a line of string (line) and affix object ({value, is_regex}), 
-# check if it matches the given number or regex (value)
-# Returns whether the program should continue to run or not
 def is_line_and_value_matching(line, affix_object, count, is_end):
-    global range
-    def determine_to_continue(affix_object):
-        value, is_regex = affix_object.values()
-        if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
-            return True
-        return False
-    if affix_object["is_range"] and not range:
-        # First element of range not found
-        if determine_to_continue(affix_object["start"]):
-            range = True
+    value, is_regex = affix_object.values()
+    if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
         return True
-    elif affix_object["is_range"] and range:
-        # Currently in range
-        if determine_to_continue(affix_object["end"]):
-            range = "pending"
-        return False
-    else:
-        # Not a range prefix
-        return determine_to_continue(affix_object["start"])
+    return False
+
+def update_range_status():  
+    pass
+    # if affix_object["is_range"] and range is False:
+    #     # First element of range is finally found
+    #     if determine_to_continue(affix_object["start"]):
+    #         range = True
+    #     return True
+    # elif affix_object["is_range"] and range is True:
+    #     # Currently in range
+    #     if determine_to_continue(affix_object["end"]):
+    #         range = "pending"
+    #         return True
+    #     return False
+    # else:
+    #     # Not a range prefix
+    #     return determine_to_continue(affix_object["start"])
 
 def handle_command(commands, line, count, is_end):
     global output, running
     for command in commands:
         if command['command'] == 'p':
-            running = p(command, line, count, is_end)
+            p(command, line, count, is_end)
         elif command['command'] == 'q':
-            running = q(command, line, count, is_end)
+            q(command, line, count, is_end)
         elif command['command'] == 'd':
-            running = d(command, line, count, is_end)
+            d(command, line, count, is_end)
         elif command['command'] == 's':
-            running = s(command, line, count, is_end)
+            s(command, line, count, is_end)
         elif command['command'] == '':
             pass
     for i in output:
@@ -71,33 +71,42 @@ def handle_command(commands, line, count, is_end):
 
 # Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count, is_end):
+    global running
     # Range prefix is not allowed with q command
     if command["prefix"]["is_range"]:
         throw_error()
-    return not is_line_and_value_matching(line, command['prefix'], count, is_end)
+    running = not is_line_and_value_matching(line, command['prefix'], count, is_end)
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
-    global range, output, running
-    if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
-        output.append(line)
-        if range == "pending":
-            range = None
-    return True if (not range is None) and running else False
+    global range, output
+    # Range Case 
+    if command['prefix']["is_range"]:
+        # Update range status
+        if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+            range = True
+            output.append(line)
+        elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+            range = None # None means range has passed
+            output.append(line)
+        elif range is True:
+            output.append(line)
+    # Non-range Case
+    else:
+        if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+            output.append(line)
 
 def d(command, line, count, is_end):
-    global range, output, running
+    global range, output
     cont = is_line_and_value_matching(line, command['prefix'], count, is_end)
     if len(output) > 0:
         if command['prefix']["is_range"]:
-            if not(range is False and cont):
+            # If within range, pop it
+            if range and cont:
                 output.pop()
         else:
             if cont:
                 output.pop()
-    if range == "pending":
-        range = None
-    return True if (not range is None) and running else False
 
 def s(command, line, count, is_end):
     global range, output
@@ -112,9 +121,6 @@ def s(command, line, count, is_end):
                 output.append(re.sub(src, dest, prev, count=1))
         if range == "pending":
             range = None
-    else:
-        pass
-    return True if (not range is None) and running else False
 
 ######################################################
 # Main
