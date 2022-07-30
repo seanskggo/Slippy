@@ -24,12 +24,6 @@ def throw_error():
     print("slippy: command line: invalid command", file=sys.stderr)
     sys.exit(1)
 
-def print_input(line):
-    # Print input if required
-    if (args_parser.should_print_input_lines()):
-        global output
-        output.append(line)
-
 # Given a line of string (line) and affix object ({value, is_regex}), 
 # check if it matches the given number or regex (value)
 # Returns whether the program should continue to run or not
@@ -66,7 +60,7 @@ def handle_command(commands, line, count, is_end):
         elif command['command'] == 's':
             running = s(command, line, count, is_end)
         elif command['command'] == '':
-            print_input(line)
+            pass
     for i in output:
         print(i, end='')
     output = []
@@ -94,12 +88,13 @@ def p(command, line, count, is_end):
 def d(command, line, count, is_end):
     global range, output, running
     cont = is_line_and_value_matching(line, command['prefix'], count, is_end)
-    if command['prefix']["is_range"]:
-        if not(range is False and cont):
-            output.pop()
-    else:
-        if cont:
-            output.pop()
+    if len(output) > 0:
+        if command['prefix']["is_range"]:
+            if not(range is False and cont):
+                output.pop()
+        else:
+            if cont:
+                output.pop()
     if range == "pending":
         range = None
     return True if (not range is None) and running else False
@@ -108,16 +103,17 @@ def s(command, line, count, is_end):
     global range, output
     if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
         src, dest = command['postfix']['affix']
-        if dest and dest[-1] == 'g':
-            prev = output.pop()
-            output.append(re.sub(src, dest[:-1], prev))
-        else:
-            prev = output.pop()
-            output.append(re.sub(src, dest, prev, count=1))
+        if len(output) > 0:
+            if dest and dest[-1] == 'g':
+                prev = output.pop()
+                output.append(re.sub(src, dest[:-1], prev))
+            else:
+                prev = output.pop()
+                output.append(re.sub(src, dest, prev, count=1))
         if range == "pending":
             range = None
     else:
-        print_input(line) 
+        pass
     return True if (not range is None) and running else False
 
 ######################################################
