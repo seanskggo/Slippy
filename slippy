@@ -20,6 +20,10 @@ commands = SedParser(args_parser.get_sed_command()).get_commands()
 # Helpers
 ######################################################
 
+def throw_error():
+    print("slippy: command line: invalid command", file=sys.stderr)
+    sys.exit(1)
+
 def print_input(line):
     # Print input if required
     if (args_parser.should_print_input_lines()):
@@ -29,18 +33,20 @@ def print_input(line):
 # check if it matches the given number or regex (value)
 # Returns whether the program should continue to run or not
 def is_line_and_value_matching(line, affix_object, count, is_end):
+    def determine_to_continue(affix_object):
+        value, is_regex = affix_object.values()
+        if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
+            return True
+        return False
     if affix_object["is_range"] and not range:
         # First element of range not found
-        pass
+        pass 
     elif affix_object["is_range"] and range:
         # Currently in range
         pass
     else:
         # Not a range prefix
-        value, is_regex = affix_object["start"].values()
-        if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
-            return True
-        return False
+        return determine_to_continue(affix_object["start"])
 
 def handle_command(commands, line, count, is_end):
     running = True
@@ -63,6 +69,8 @@ def handle_command(commands, line, count, is_end):
 
 # Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count, is_end):
+    if command["prefix"]["is_range"]:
+        throw_error()
     print_input(line)
     return not is_line_and_value_matching(line, command['prefix'], count, is_end)
 
