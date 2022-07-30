@@ -27,7 +27,8 @@ def throw_error():
 def print_input(line):
     # Print input if required
     if (args_parser.should_print_input_lines()):
-        print(line, end='')
+        global output
+        output.append(line)
 
 # Given a line of string (line) and affix object ({value, is_regex}), 
 # check if it matches the given number or regex (value)
@@ -54,7 +55,7 @@ def is_line_and_value_matching(line, affix_object, count, is_end):
         return determine_to_continue(affix_object["start"])
 
 def handle_command(commands, line, count, is_end):
-    running = True
+    global output, running
     for command in commands:
         if command['command'] == 'p':
             running = p(command, line, count, is_end)
@@ -66,7 +67,9 @@ def handle_command(commands, line, count, is_end):
             running = s(command, line, count, is_end)
         elif command['command'] == '':
             print_input(line)
-    return running
+    for i in output:
+        print(i, end='')
+    output = []
 
 ######################################################
 # Cases
@@ -77,45 +80,45 @@ def q(command, line, count, is_end):
     # Range prefix is not allowed with q command
     if command["prefix"]["is_range"]:
         throw_error()
-    print_input(line)
     return not is_line_and_value_matching(line, command['prefix'], count, is_end)
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
-    global range
-    print_input(line)
+    global range, output, running
     if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
-        print(line, end='')
+        output.append(line)
         if range == "pending":
             range = None
-    return True if not range is None else False
+    return True if (not range is None) and running else False
 
 def d(command, line, count, is_end):
-    global range
+    global range, output, running
     cont = is_line_and_value_matching(line, command['prefix'], count, is_end)
     if command['prefix']["is_range"]:
-        if range is False and cont:
-            print_input(line)  
+        if not(range is False and cont):
+            output.pop()
     else:
-        if not cont:
-            print_input(line)  
+        if cont:
+            output.pop()
     if range == "pending":
         range = None
-    return True if not range is None else False
+    return True if (not range is None) and running else False
 
 def s(command, line, count, is_end):
-    global range
+    global range, output
     if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
         src, dest = command['postfix']['affix']
         if dest and dest[-1] == 'g':
-            print_input(re.sub(src, dest[:-1], line))    
+            prev = output.pop()
+            output.append(re.sub(src, dest[:-1], prev))
         else:
-            print_input(re.sub(src, dest, line, count=1))
+            prev = output.pop()
+            output.append(re.sub(src, dest, prev, count=1))
         if range == "pending":
             range = None
     else:
         print_input(line) 
-    return True if not range is None else False
+    return True if (not range is None) and running else False
 
 ######################################################
 # Main
@@ -125,6 +128,7 @@ count = 1
 running = True
 buffer = [[args_parser.get_next_line(), False]]
 range = False
+output = []
 
 while True:
 
@@ -139,7 +143,9 @@ while True:
         buffer.append([next_line, False])
 
     current_line, is_end = buffer.pop(0)
-    running = handle_command(commands, current_line, count, is_end)
+    if args_parser.should_print_input_lines():
+        output.append(current_line)
+    handle_command(commands, current_line, count, is_end)
     count += 1
 
     if not running: 
