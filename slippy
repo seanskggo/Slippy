@@ -33,6 +33,7 @@ def print_input(line):
 # check if it matches the given number or regex (value)
 # Returns whether the program should continue to run or not
 def is_line_and_value_matching(line, affix_object, count, is_end):
+    global range
     def determine_to_continue(affix_object):
         value, is_regex = affix_object.values()
         if (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end):
@@ -40,10 +41,14 @@ def is_line_and_value_matching(line, affix_object, count, is_end):
         return False
     if affix_object["is_range"] and not range:
         # First element of range not found
-        pass 
+        if determine_to_continue(affix_object["start"]):
+            range = True
+        return True
     elif affix_object["is_range"] and range:
         # Currently in range
-        pass
+        if determine_to_continue(affix_object["end"]):
+            range = "pending"
+        return False
     else:
         # Not a range prefix
         return determine_to_continue(affix_object["start"])
@@ -69,6 +74,7 @@ def handle_command(commands, line, count, is_end):
 
 # Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count, is_end):
+    # Range prefix is not allowed with q command
     if command["prefix"]["is_range"]:
         throw_error()
     print_input(line)
@@ -76,26 +82,35 @@ def q(command, line, count, is_end):
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
+    global range
     print_input(line)
-    if is_line_and_value_matching(line, command['prefix'], count, is_end):
+    if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
         print(line, end='')
-    return True
+        if range == "pending":
+            range = None
+    return True if not range is None else False
 
 def d(command, line, count, is_end):
-    if not is_line_and_value_matching(line, command['prefix'], count, is_end):
+    global range
+    if not is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
         print_input(line)  
-    return True
+        if range == "pending":
+            range = None
+    return True if not range is None else False
 
 def s(command, line, count, is_end):
-    if is_line_and_value_matching(line, command['prefix'], count, is_end):
+    global range
+    if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
         src, dest = command['postfix']['affix']
         if dest and dest[-1] == 'g':
             print_input(re.sub(src, dest[:-1], line))    
         else:
             print_input(re.sub(src, dest, line, count=1))
+        if range == "pending":
+            range = None
     else:
         print_input(line) 
-    return True
+    return True if not range is None else False
 
 ######################################################
 # Main
