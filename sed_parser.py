@@ -8,7 +8,7 @@ import sys
 import re
 
 # Possible prefix regex
-PREFIX = '(\$|[0-9]+|\/.+\/)'
+PREFIX = '(\$|[0-9]+|\/.*\/)'
 
 class SedParser():
     def __init__(self, sed):
@@ -83,15 +83,29 @@ def get_pre_and_postfix(sed, cmd, d):
 # Given an affix, categorise it into either a number or a regex
 # and return the filtered result in an object
 def categorise_prefix(affix):
-    if not is_convertible_to_int(affix):
-        if affix == '$':
-            return { "affix": '$', "is_regex": False }
-        aff = re.sub(f'\/(.*)\/', '\g<1>', affix)
-        return { "affix": aff, "is_regex": True }
-    elif int(affix) > 0:
-        return { "affix": int(affix), "is_regex": False }
+    def get_prefix(affix):
+        if not is_convertible_to_int(affix):
+            if affix == '$':
+                return { "affix": '$', "is_regex": False }
+            aff = re.sub(f'\/(.*)\/', '\g<1>', affix)
+            return { "affix": aff, "is_regex": True }
+        elif int(affix) > 0:
+            return { "affix": int(affix), "is_regex": False }
+        else:
+            throw_error()
+    if re.search(f'^{PREFIX},{PREFIX}$', affix):
+        start = re.search(f'^({PREFIX}),', affix).group(1)
+        end = re.search(f',({PREFIX})$', affix).group(1)
+        return {
+            "is_range": True,
+            "start": get_prefix(start),
+            "end": get_prefix(end)
+        }
     else:
-        throw_error()
+        return {
+            "is_range": False,
+            "start": get_prefix(affix)
+        }
 
 # Given an affix, categorise it into either a number or a regex
 # and return the filtered result in an object
