@@ -92,10 +92,15 @@ def p(command, line, count, is_end):
 
 def d(command, line, count, is_end):
     global range
-    if not is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
-        print_input(line)  
-        if range == "pending":
-            range = None
+    cont = is_line_and_value_matching(line, command['prefix'], count, is_end)
+    if command['prefix']["is_range"]:
+        if range is False and cont:
+            print_input(line)  
+    else:
+        if not cont:
+            print_input(line)  
+    if range == "pending":
+        range = None
     return True if not range is None else False
 
 def s(command, line, count, is_end):
