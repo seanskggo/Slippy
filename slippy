@@ -117,7 +117,7 @@ def s(command, line, count, is_end):
         else:
             output.append(re.sub(src, dest, output.pop(), count=1))
         current_line = output[-1]
-    if len(output) > 0:
+    if output and args_parser.should_print_input_lines():
         # Range Case 
         if command['prefix']["is_range"]:
             # Update range status
