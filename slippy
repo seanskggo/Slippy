@@ -20,6 +20,12 @@ commands = SedParser(args_parser.get_sed_command()).get_commands()
 # Helpers
 ######################################################
 
+def print_output_and_reset():
+    global output
+    for i in output:
+        print(i, end='')
+    output = []
+
 def throw_error():
     print("slippy: command line: invalid command", file=sys.stderr)
     sys.exit(1)
@@ -46,9 +52,7 @@ def handle_command(commands, line, count, is_end):
             a(command, line, count, is_end)
         elif command['command'] == '':
             pass
-    for i in output:
-        print(i, end='')
-    output = []
+    print_output_and_reset()
 
 ######################################################
 # Cases
@@ -62,10 +66,8 @@ def q(command, line, count, is_end):
         throw_error()
     if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
         if output:
-            for i in output:
-                print(i, end='')
+            print_output_and_reset()
             running = False
-            output = []
             return 
     running = True
 
