@@ -30,8 +30,8 @@ def format_command(sed):
     def format_sed(sed, cmd, delimiter='/'):
         pre, cmd, post = get_pre_and_postfix(sed, cmd, delimiter)
         suffix = categorise_suffix(post, delimiter)
-        if cmd == 'a':
-            suffix = re.search(f'^({PREFIX},)?({PREFIX})?a(.+)$', sed).group(5).strip()
+        if cmd in ['a']:
+            suffix = re.search(f'^({PREFIX},)?({PREFIX})?{cmd}(.+)$', sed).group(5).strip()
         return {
             "prefix": categorise_prefix(pre),
             "command": cmd,
