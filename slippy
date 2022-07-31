@@ -60,7 +60,10 @@ def q(command, line, count, is_end):
         throw_error()
     if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
         if output:
+            for i in output:
+                print(i, end='')
             running = False
+            output = []
             return 
     running = True
 
