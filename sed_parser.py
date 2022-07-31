@@ -45,6 +45,7 @@ def format_command(sed):
         return format_sed(sed, 'd')
     elif re.search(f'^({PREFIX},)?({PREFIX})?s.*g?$', sed):
         d = re.search('s(\S).*g?$', sed).group(1)
+        d = replace_delimiter(d)
         if not re.search(f'^({PREFIX},)?({PREFIX})?s{d}.+{d}.*{d}g?$', sed):
             throw_error()
         return format_sed(sed, 's', d)
@@ -54,6 +55,11 @@ def format_command(sed):
 ######################################################
 # Helpers
 ######################################################
+
+def replace_delimiter(d):
+    if d in ['?', '.', '*', '^', '$', '+', '|', '{', '}', '\\']:
+        return f'\{d}'
+    return d
 
 # Throw slippy error and exit
 def throw_error():
@@ -72,6 +78,7 @@ def is_convertible_to_int(num):
 # return a tuple of three elements of (prefix, command, postfix)
 # e.g. 2s/a// => (2, s, '/a//')
 def get_pre_and_postfix(sed, cmd, d):
+    d = replace_delimiter(d)
     prefix = re.search(f'^(({PREFIX},)?({PREFIX})?){cmd}', sed)
     postfix = re.search(f'{cmd}({d}.+{d}.*{d}g?)$', sed)
     return (
@@ -113,7 +120,7 @@ def categorise_suffix(affix, d):
     if not is_convertible_to_int(affix):
         if affix == '$':
             return { "affix": '$', "is_regex": False }
-        aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d)
+        aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d[-1])
         return { "affix": aff, "is_regex": True }
     elif int(affix) > 0:
         return { "affix": int(affix), "is_regex": False }
