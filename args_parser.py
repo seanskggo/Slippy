@@ -18,6 +18,7 @@ class ArgsParser():
         self.sed_command = None
         self.files = []
         self.is_stdin = False
+        self.first_file = None
 
         if '-i' in arg_list:
             arg_list.pop(0)
@@ -45,6 +46,7 @@ class ArgsParser():
         self.sed_command = re.sub('#.*;', ';', self.sed_command)
         self.sed_command = re.sub('#.*', '', self.sed_command)
         self.sed_command = re.sub('\n', ';', self.sed_command)
+        self.first_file = arg_list[0] if arg_list else None
 
         input = []
         for file in arg_list:
@@ -76,3 +78,6 @@ class ArgsParser():
                 return self.files.pop(0)
             else: 
                 return None
+
+    def get_first_filename(self):
+        return self.first_file

@@ -22,9 +22,14 @@ commands = SedParser(args_parser.get_sed_command()).get_commands()
 
 def print_output_and_reset():
     global output
-    for i in output:
-        print(i, end='')
-    output = []
+    if args_parser.should_replace_file_with_output():
+        with open(args_parser.first_file, 'w') as f:
+            for i in output:
+                f.write(i)
+    else:
+        for i in output:
+            print(i, end='')
+        output = []
 
 def throw_error():
     print("slippy: command line: invalid command", file=sys.stderr)
