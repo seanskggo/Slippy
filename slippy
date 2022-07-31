@@ -81,6 +81,8 @@ def p(command, line, count, is_end):
                 output.append(current_line)
             elif range and is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
                 output.append(current_line)
+            elif range and not command['prefix']['start']['is_regex']:
+                output.append(current_line)
         # Non-range Case
         else:
             if is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
