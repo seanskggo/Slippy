@@ -42,6 +42,8 @@ def handle_command(commands, line, count, is_end):
             d(command, line, count, is_end)
         elif command['command'] == 's':
             s(command, line, count, is_end)
+        elif command['command'] == 'a':
+            a(command, line, count, is_end)
         elif command['command'] == '':
             pass
     for i in output:
@@ -133,6 +135,27 @@ def s(command, line, count, is_end):
         else:
             if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
                 sub()
+
+def a(command, line, count, is_end):
+    word = command['postfix'] + '\n'
+    global range, output, current_line
+    if output or not args_parser.should_print_input_lines():
+        if command['prefix']["is_range"]:
+            # Update range status
+            if not range and is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
+                range = True
+                output.append(word)
+            elif range and is_line_and_value_matching(current_line, command['prefix']['end'], count, is_end):
+                range = False
+                output.append(word)
+            elif range and is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
+                output.append(word)
+            elif range and not command['prefix']['start']['is_regex']:
+                output.append(word)
+        # Non-range Case
+        else:
+            if is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
+                output.append(word)
 
 ######################################################
 # Main
