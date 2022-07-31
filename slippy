@@ -72,7 +72,7 @@ def p(command, line, count, is_end):
         elif range and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
             range = False
             output.append(line)
-        elif range:
+        elif range and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
             output.append(line)
     # Non-range Case
     else:
