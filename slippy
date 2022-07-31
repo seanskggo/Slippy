@@ -54,11 +54,15 @@ def handle_command(commands, line, count, is_end):
 
 # Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count, is_end):
-    global running
+    global running, output
     # Range prefix is not allowed with q command
     if command["prefix"]["is_range"]:
         throw_error()
-    running = not is_line_and_value_matching(line, command['prefix']['start'], count, is_end)
+    if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+        if output:
+            running = False
+            return 
+    running = True
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
