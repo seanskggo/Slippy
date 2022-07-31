@@ -31,23 +31,6 @@ def is_line_and_value_matching(line, affix_object, count, is_end):
         return True
     return False
 
-def update_range_status():  
-    pass
-    # if affix_object["is_range"] and range is False:
-    #     # First element of range is finally found
-    #     if determine_to_continue(affix_object["start"]):
-    #         range = True
-    #     return True
-    # elif affix_object["is_range"] and range is True:
-    #     # Currently in range
-    #     if determine_to_continue(affix_object["end"]):
-    #         range = "pending"
-    #         return True
-    #     return False
-    # else:
-    #     # Not a range prefix
-    #     return determine_to_continue(affix_object["start"])
-
 def handle_command(commands, line, count, is_end):
     global output, running
     for command in commands:
@@ -75,7 +58,7 @@ def q(command, line, count, is_end):
     # Range prefix is not allowed with q command
     if command["prefix"]["is_range"]:
         throw_error()
-    running = not is_line_and_value_matching(line, command['prefix'], count, is_end)
+    running = not is_line_and_value_matching(line, command['prefix']['start'], count, is_end)
 
 # Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
@@ -98,29 +81,47 @@ def p(command, line, count, is_end):
 
 def d(command, line, count, is_end):
     global range, output
-    cont = is_line_and_value_matching(line, command['prefix'], count, is_end)
     if len(output) > 0:
+        # Range Case 
         if command['prefix']["is_range"]:
-            # If within range, pop it
-            if range and cont:
+            # Update range status
+            if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+                range = True
                 output.pop()
+            elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+                range = None # None means range has passed
+                output.pop()
+            elif range is True:
+                output.pop()
+        # Non-range Case
         else:
-            if cont:
+            if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
                 output.pop()
 
 def s(command, line, count, is_end):
     global range, output
-    if is_line_and_value_matching(line, command['prefix'], count, is_end) or range:
-        src, dest = command['postfix']['affix']
-        if len(output) > 0:
-            if dest and dest[-1] == 'g':
-                prev = output.pop()
-                output.append(re.sub(src, dest[:-1], prev))
-            else:
-                prev = output.pop()
-                output.append(re.sub(src, dest, prev, count=1))
-        if range == "pending":
-            range = None
+    src, dest = command['postfix']['affix']
+    def sub():
+        if dest and dest[-1] == 'g':
+            output.append(re.sub(src, dest[:-1], output.pop()))
+        else:
+            output.append(re.sub(src, dest, output.pop(), count=1))
+    if len(output) > 0:
+        # Range Case 
+        if command['prefix']["is_range"]:
+            # Update range status
+            if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+                range = True
+                sub()
+            elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+                range = None # None means range has passed
+                sub()
+            elif range is True:
+                sub()
+        # Non-range Case
+        else:
+            if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+                sub()
 
 ######################################################
 # Main
@@ -134,21 +135,19 @@ output = []
 
 while True:
 
-    if not buffer:
+    # Exit loop if last line reached or q command is reached
+    if not buffer or not running:
         break
 
     # Populate buffer with next line
     next_line = args_parser.get_next_line()
-    if not next_line:
-        buffer[-1][-1] = True
-    else:
+    if next_line:
         buffer.append([next_line, False])
+    else:
+        buffer[-1][-1] = True
 
     current_line, is_end = buffer.pop(0)
     if args_parser.should_print_input_lines():
         output.append(current_line)
     handle_command(commands, current_line, count, is_end)
     count += 1
-
-    if not running: 
-        break
