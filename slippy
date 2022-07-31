@@ -66,13 +66,13 @@ def p(command, line, count, is_end):
     # Range Case 
     if command['prefix']["is_range"]:
         # Update range status
-        if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+        if not range and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
             range = True
             output.append(line)
-        elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
-            range = None # None means range has passed
+        elif range and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+            range = False
             output.append(line)
-        elif range is True:
+        elif range:
             output.append(line)
     # Non-range Case
     else:
@@ -85,13 +85,13 @@ def d(command, line, count, is_end):
         # Range Case 
         if command['prefix']["is_range"]:
             # Update range status
-            if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+            if not range and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
                 range = True
                 output.pop()
-            elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
-                range = None # None means range has passed
+            elif range and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+                range = False 
                 output.pop()
-            elif range is True:
+            elif range:
                 output.pop()
         # Non-range Case
         else:
@@ -110,13 +110,13 @@ def s(command, line, count, is_end):
         # Range Case 
         if command['prefix']["is_range"]:
             # Update range status
-            if range is False and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+            if not range and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
                 range = True
                 sub()
-            elif range is True and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
-                range = None # None means range has passed
+            elif range and is_line_and_value_matching(line, command['prefix']['end'], count, is_end):
+                range = False
                 sub()
-            elif range is True:
+            elif range:
                 sub()
         # Non-range Case
         else:
