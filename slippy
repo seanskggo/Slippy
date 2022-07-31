@@ -57,6 +57,8 @@ def handle_command(commands, line, count, is_end):
             a(command, line, count, is_end)
         elif command['command'] == 'i':
             i(command, line, count, is_end)
+        elif command['command'] == 'c':
+            c(command, line, count, is_end)
         elif command['command'] == '':
             pass
     print_output_and_reset()
@@ -154,6 +156,13 @@ def i(command, line, count, is_end):
     global range, output, current_line
     def lambda_func():
         output.insert(-1, command['postfix'] + '\n')
+    if output or not args_parser.should_print_input_lines():
+        handle_range_print(lambda_func, command, count, is_end)
+
+def c(command, line, count, is_end):
+    global range, output, current_line
+    def lambda_func():
+        output[-1] = command['postfix'] + '\n'
     if output or not args_parser.should_print_input_lines():
         handle_range_print(lambda_func, command, count, is_end)
 
