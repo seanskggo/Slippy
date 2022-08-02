@@ -5,7 +5,7 @@
 # Subset 1
 # 
 # Testing commands:
-# => q - quit command
+# => s command & addresses & comments & white spaces
 #
 # ASSUMES ALL RELEVANT FILES FRO SLIPPY ARE IN PATH
 ######################################################################
