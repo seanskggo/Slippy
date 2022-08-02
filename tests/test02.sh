@@ -138,12 +138,11 @@ then
     echo "PASSED"
 else
     echo "FAILED"
-    diff a b
-    # echo "--------------- ANSWER ---------------"
-    # cat a
-    # echo "-------------- EXPECTED --------------"
-    # cat b
-    # echo "--------------------------------------"
+    echo "--------------- ANSWER ---------------"
+    cat a
+    echo "-------------- EXPECTED --------------"
+    cat b
+    echo "--------------------------------------"
 fi
 
 rm a b
