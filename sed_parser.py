@@ -52,7 +52,7 @@ def format_command(sed):
         return format_sed(sed, 'i')
     elif re.search(f'^({PREFIX},)?({PREFIX})?c.+$', sed):
         return format_sed(sed, 'c')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?s.*g?$', sed):
+    elif re.search(f'^({PREFIX},)?({PREFIX})?s.+g?$', sed):
         d = re.search('s(\S).*g?$', sed).group(1)
         d = replace_delimiter(d)
         if not re.search(f'^({PREFIX},)?({PREFIX})?s{d}.+{d}.*{d}g?$', sed):

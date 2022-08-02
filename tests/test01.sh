@@ -18,25 +18,25 @@ test_commands () {
 
     mkdir temp && cp slippy args_parser.py sed_parser.py temp && cd temp || exit
 
-    seq 1 10    | ./slippy 'hq'         # error check 
-    seq 1 10    | ./slippy '*q'         # error check 
-    seq 1 10    | ./slippy '^q'         # error check 
+    seq 1 10    | ./slippy 'hd'         # error check 
+    seq 1 10    | ./slippy '*d'         # error check 
+    seq 1 10    | ./slippy '^d'         # error check 
 
-    echo "test" | ./slippy 'q'          # normal case
-    echo ""     | ./slippy 'q'          # empty case
-    seq 1 10    | ./slippy 'q'          # sequence 
-    seq 1 10    | ./slippy '4q'         # sequence end at 4th line
-    seq 1 20    | ./slippy '/2./q'      # sequence with regex quit at 20
-    seq 1 100   | ./slippy '/^.+5$/q'   # complex regex
-    seq 1 20    | ./slippy '/%%%/q'     # invalid regex
+    echo "test" | ./slippy 'd'          # normal case
+    echo ""     | ./slippy 'd'          # empty case
+    seq 1 10    | ./slippy 'd'          # sequence 
+    seq 1 10    | ./slippy '4d'         # sequence end at 4th line
+    seq 1 20    | ./slippy '/2./d'      # sequence with regex quit at 20
+    seq 1 100   | ./slippy '/^.+5$/d'   # complex regex
+    seq 1 20    | ./slippy '/%%%/d'     # invalid regex
 
-    echo "test" | ./slippy 'p'          # normal case
-    echo ""     | ./slippy 'p'          # empty case
-    seq 1 10    | ./slippy 'p'          # sequence 
-    seq 1 10    | ./slippy '4p'         # sequence print additional 4th line
-    seq 1 20    | ./slippy '/2./p'      # sequence print additional for 20s
-    seq 1 100   | ./slippy '/^.+5$/p'   # complex regex
-    seq 1 20    | ./slippy '/%%%/p'     # invalid regex
+    echo "test" | ./slippy 'd'          # normal case
+    echo ""     | ./slippy 'd'          # empty case
+    seq 1 10    | ./slippy 'd'          # sequence 
+    seq 1 10    | ./slippy '4d'         # sequence print additional 4th line
+    seq 1 20    | ./slippy '/2./d'      # sequence print additional for 20s
+    seq 1 100   | ./slippy '/^.+5$/d'   # complex regex
+    seq 1 20    | ./slippy '/%%%/d'     # invalid regex
 
     cd .. && rm -rf temp
 
@@ -50,7 +50,25 @@ make_answers () {
 
     mkdir temp && cd temp || exit
 
-    echo "test" | 2041 slippy 'q'
+    seq 1 10    | 2041 slippy 'hd'         # error check 
+    seq 1 10    | 2041 slippy '*d'         # error check 
+    seq 1 10    | 2041 slippy '^d'         # error check 
+
+    echo "test" | 2041 slippy 'd'          # normal case
+    echo ""     | 2041 slippy 'd'          # empty case
+    seq 1 10    | 2041 slippy 'd'          # sequence 
+    seq 1 10    | 2041 slippy '4d'         # sequence end at 4th line
+    seq 1 20    | 2041 slippy '/2./d'      # sequence with regex quit at 20
+    seq 1 100   | 2041 slippy '/^.+5$/d'   # complex regex
+    seq 1 20    | 2041 slippy '/%%%/d'     # invalid regex
+
+    echo "test" | 2041 slippy 'd'          # normal case
+    echo ""     | 2041 slippy 'd'          # empty case
+    seq 1 10    | 2041 slippy 'd'          # sequence 
+    seq 1 10    | 2041 slippy '4d'         # sequence print additional 4th line
+    seq 1 20    | 2041 slippy '/2./d'      # sequence print additional for 20s
+    seq 1 100   | 2041 slippy '/^.+5$/d'   # complex regex
+    seq 1 20    | 2041 slippy '/%%%/d'     # invalid regex
 
     cd .. && rm -rf temp
 
