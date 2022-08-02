@@ -18,7 +18,22 @@ test_commands () {
 
     mkdir temp && cp slippy args_parser.py sed_parser.py temp && cd temp || exit
 
-    echo "test" | ./slippy 'q'
+    # Special delimiter tests
+    seq 1 10                | ./slippy 's/1/3/'             # normal delimiter   
+    seq 1 50                | ./slippy '5s/1/3/g'           # normal line 5 substitute
+    seq 1 50                | ./slippy 's/1/3/g'            # global substitute
+    seq 1 50                | ./slippy '/1./s/1/3/g'        # global regex substitute
+    seq 1 10                | ./slippy 's+1+3+'             # special delimiter   
+    seq 1 50                | ./slippy '5s_1_3_g'           # special delimiter with line 5 substitute
+    seq 1 50                | ./slippy 's*1*3*g'            # special global substitute
+    seq 1 50                | ./slippy '/1./s^1^3^g'        # special global regex substitute
+    seq 1 10                | ./slippy 's13'             # no delimiter   
+
+    # Address tests
+
+
+    # Comments and white space tests
+
 
     cd .. && rm -rf temp
 
