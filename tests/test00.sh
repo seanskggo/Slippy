@@ -18,9 +18,9 @@ test_commands () {
 
     mkdir temp && cp slippy args_parser.py sed_parser.py temp && cd temp || exit
 
-    seq 1 10 | ./slippy 'hq'            # error check 
-    seq 1 10 | ./slippy '*q'            # error check 
-    seq 1 10 | ./slippy '^q'            # error check 
+    seq 1 10    | ./slippy 'hq'         # error check 
+    seq 1 10    | ./slippy '*q'         # error check 
+    seq 1 10    | ./slippy '^q'         # error check 
 
     echo "test" | ./slippy 'q'          # normal case
     echo ""     | ./slippy 'q'          # empty case
@@ -50,9 +50,9 @@ make_answers () {
 
     mkdir temp && cd temp || exit
 
-    seq 1 10 | 2041 slippy 'hq'             # error check 
-    seq 1 10 | 2041 slippy '*q'             # error check 
-    seq 1 10 | 2041 slippy '^q'             # error check 
+    seq 1 10    | 2041 slippy 'hq'          # error check 
+    seq 1 10    | 2041 slippy '*q'          # error check 
+    seq 1 10    | 2041 slippy '^q'          # error check 
 
     echo "test" | 2041 slippy 'q'           # normal case
     echo ""     | 2041 slippy 'q'           # empty case
