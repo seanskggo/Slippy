@@ -7,7 +7,7 @@
 # Testing commands:
 # => multiple commands
 #
-# ASSUMES ALL RELEVANT FILES FRO SLIPPY ARE IN PATH
+# ASSUMES ALL RELEVANT SLIPPY FILES ARE IN PATH
 ######################################################################
 
 ######################################################################
