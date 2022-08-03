@@ -54,7 +54,7 @@ class ArgsParser():
                 for line in f:
                     input.append(line)
         self.files = input
-        if not self.files:
+        if not self.files and len(arg_list) == 0:
             self.is_stdin = True
 
     def should_replace_file_with_output(self):
