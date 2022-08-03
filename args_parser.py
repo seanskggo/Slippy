@@ -88,7 +88,7 @@ class ArgsParser():
             if self.files:
                 return self.files.pop(0)
             else: 
-                return None
+                return ''
 
     def get_first_filename(self):
         return self.first_file
