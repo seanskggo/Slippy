@@ -11,7 +11,7 @@ class ArgsParser():
     def __init__(self, arg_list):
         if len(arg_list) < 1:
             print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]", file=sys.stderr)
-            exit(1)
+            sys.exit(1)
 
         self.replace_file_with_output = False
         self.print_input_lines = True
@@ -31,16 +31,27 @@ class ArgsParser():
         if '-f' in arg_list:
             arg_list.pop(0)
             file = arg_list.pop(0)
+            code = 0
             try:
+                commands = ''
                 with open(file, 'r') as f: 
-                    command = re.sub('\n', ';', f.read()).strip(';')
+                    PREFIX = '(\$|[0-9]+|\/.*\/)'
+                    for index, command in enumerate(f):
+                        if not re.search(f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?$', command):
+                            code = 1
+                            sys.exit(1)
+                        commands = commands + ';' + command 
+                    commands = commands.strip(';')
             except:
-                print("slippy: error", file=sys.stderr)
+                if code == 1:
+                    print(f"slippy: file commands.slippy line {index + 1}: invalid command", file=sys.stderr)
+                else:
+                    print("slippy: error", file=sys.stderr)
                 sys.exit(1)
-            self.sed_command = command
+            self.sed_command = commands
         else:
-            command = arg_list.pop(0)
-            self.sed_command = command
+            commands = arg_list.pop(0)
+            self.sed_command = commands
 
         self.sed_command = re.sub(' ', '', self.sed_command)
         self.sed_command = re.sub('#.*;', ';', self.sed_command)
