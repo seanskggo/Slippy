@@ -70,7 +70,7 @@ def format_command(sed):
     else: throw_error()
     
 ######################################################
-# Helpers
+# Helper Functions
 ######################################################
 
 def replace_delimiter(d):

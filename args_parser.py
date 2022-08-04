@@ -38,7 +38,6 @@ class ArgsParser():
                     PREFIX = '(\$|[0-9]+|\/.*\/)'
                     for index, command in enumerate(f):
                         if not re.search(f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?(#.*)?$', re.sub(' ', '', command)):
-                            print(command, file=sys.stderr)
                             code = 1
                             sys.exit(1)
                         commands = commands + ';' + command 

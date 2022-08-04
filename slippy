@@ -40,6 +40,7 @@ def is_line_and_value_matching(line, affix_object, count, is_end):
     value, is_regex = affix_object.values()
     return (is_regex and re.search(value, line)) or (count == value) or (value == '$' and is_end)
 
+# Handle command cases
 def handle_command(commands, line, count, is_end):
     global output, running
     for command in commands:
@@ -52,45 +53,45 @@ def handle_command(commands, line, count, is_end):
         elif command['command'] == 'c': c(command, line, count, is_end)
     print_output_and_reset()
 
+# Print range cases for commands that print (p, a, i, c)
 def handle_range_print(lambda_func, command, count, is_end):
     global range, output, current_line
     start_matching = is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end)    
     end_matching = is_line_and_value_matching(current_line, command['prefix']['end'], count, is_end) if range else False
     is_start_regex = command['prefix']['start']['is_regex']
     if command['prefix']["is_range"]:
-        if not range and start_matching: range = True
-        elif range and end_matching: range = False
         # Update range status
         if not range and start_matching:
+            range = True
             lambda_func()
         elif range and end_matching:
+            range = False
             lambda_func()
-        elif range and start_matching:
+        elif range and (start_matching or not is_start_regex):
             lambda_func()
-        elif range and not is_start_regex:
-            lambda_func()
+        return 
     # Non-range Case
-    else:
-        if start_matching:
-            lambda_func()
+    if start_matching: lambda_func()
 
+# Handle range cases for commands that modify (d, s)
 def handle_range_modify(lambda_func, command, count, is_end):
     global range, output, current_line
+    start_matching = is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end)    
+    end_matching = is_line_and_value_matching(current_line, command['prefix']['end'], count, is_end) if range else False
     # Range Case 
     if command['prefix']["is_range"]:
         # Update range status
-        if not range and is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
+        if not range and start_matching:
             range = True
             lambda_func()
-        elif range and is_line_and_value_matching(current_line, command['prefix']['end'], count, is_end):
+        elif range and end_matching:
             range = False 
             lambda_func()
         elif range:
             lambda_func()
+        return 
     # Non-range Case
-    else:
-        if is_line_and_value_matching(current_line, command['prefix']['start'], count, is_end):
-            lambda_func()
+    if start_matching: lambda_func()
 
 ######################################################
 # Cases
@@ -100,13 +101,11 @@ def handle_range_modify(lambda_func, command, count, is_end):
 def q(command, line, count, is_end):
     global running, output
     # Range prefix is not allowed with q command
-    if command["prefix"]["is_range"]:
-        throw_error()
-    if is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
-        if output:
-            print_output_and_reset()
-            running = False
-            return 
+    if command["prefix"]["is_range"]: throw_error()
+    if output and is_line_and_value_matching(line, command['prefix']['start'], count, is_end):
+        print_output_and_reset()
+        running = False
+        return 
     running = True
 
 # Handle p case. Return a boolean to indicate termination or 
