@@ -58,12 +58,12 @@ def handle_range_print(lambda_func, command, count, is_end):
     end_matching = is_line_and_value_matching(current_line, command['prefix']['end'], count, is_end) if range else False
     is_start_regex = command['prefix']['start']['is_regex']
     if command['prefix']["is_range"]:
+        if not range and start_matching: range = True
+        elif range and end_matching: range = False
         # Update range status
         if not range and start_matching:
-            range = True
             lambda_func()
         elif range and end_matching:
-            range = False
             lambda_func()
         elif range and start_matching:
             lambda_func()
