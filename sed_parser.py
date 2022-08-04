@@ -85,11 +85,18 @@ def throw_error():
 
 # Check if string is convertible to int
 def is_convertible_to_int(num):
-    try:
-        int(num)
-    except ValueError:
-        return False
+    try: int(num)
+    except: return False
     return True
+
+# Return filtered affix
+def get_filtered_affix(affix, mod_affix):
+    if not is_convertible_to_int(affix):
+        if affix == '$': return { "affix": '$', "is_regex": False }
+        else: return { "affix": mod_affix, "is_regex": True }
+    elif int(affix) > 0:
+        return { "affix": int(affix), "is_regex": False }
+    throw_error()
 
 # Given a command regex of form <prefix>command<postfix>, 
 # return a tuple of three elements of (prefix, command, postfix)
@@ -98,25 +105,21 @@ def get_pre_and_postfix(sed, cmd, d):
     d = replace_delimiter(d)
     prefix = re.search(f'^({RANGE_PREFIX}){cmd}', sed)
     postfix = re.search(f'{cmd}({d}.+{d}.*{d}g?)$', sed)
+    
     return (
         prefix.group(1) if prefix else '', 
         cmd, 
         postfix.group(1) if postfix else ''
     )
 
-# Given an affix, categorise it into either a number or a regex
+# Given an prefix, categorise it into either a number or a regex
 # and return the filtered result in an object
 def categorise_prefix(affix):
+
     def get_prefix(affix):
-        if not is_convertible_to_int(affix):
-            if affix == '$':
-                return { "affix": '$', "is_regex": False }
-            aff = re.sub(f'\/(.*)\/', '\g<1>', affix)
-            return { "affix": aff, "is_regex": True }
-        elif int(affix) > 0:
-            return { "affix": int(affix), "is_regex": False }
-        else:
-            throw_error()
+        mod_affix = re.sub(f'\/(.*)\/', '\g<1>', affix)
+        return get_filtered_affix(affix, mod_affix)
+
     if re.search(f'^{PREFIX},{PREFIX}$', affix):
         start = re.search(f'^({PREFIX}),', affix).group(1)
         end = re.search(f',({PREFIX})$', affix).group(1)
@@ -125,21 +128,14 @@ def categorise_prefix(affix):
             "start": get_prefix(start),
             "end": get_prefix(end)
         }
-    else:
-        return {
-            "is_range": False,
-            "start": get_prefix(affix)
-        }
 
-# Given an affix, categorise it into either a number or a regex
+    return {
+        "is_range": False,
+        "start": get_prefix(affix)
+    }
+
+# Given a suffix, categorise it into either a number or a regex
 # and return the filtered result in an object
 def categorise_suffix(affix, d):
-    if not is_convertible_to_int(affix):
-        if affix == '$':
-            return { "affix": '$', "is_regex": False }
-        aff = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d[-1])
-        return { "affix": aff, "is_regex": True }
-    elif int(affix) > 0:
-        return { "affix": int(affix), "is_regex": False }
-    else:
-        throw_error()
+    mod_affix = re.sub(f'{d}(.*){d}', '\g<1>', affix).split(d[-1])
+    return get_filtered_affix(affix, mod_affix)
