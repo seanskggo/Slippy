@@ -13,6 +13,10 @@ COMMAND_REGEX = f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?(#.*)?$'
 
 ######################################################
 # Argument Parser Class
+#
+# This class is responsible for parsing the 
+# commandline arguments into a workable format for
+# slippy.
 ######################################################
 
 import sys

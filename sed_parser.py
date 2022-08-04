@@ -18,6 +18,10 @@ S_COMMAND_REGEX = f'^{RANGE_PREFIX}s.+g?$'
 
 ######################################################
 # Sed Command Parser Class
+#
+# This class is responsible for parsing the sed 
+# command and returning a dictionary consisting of 
+# easily usable components for slippy.
 ######################################################
 
 import sys
