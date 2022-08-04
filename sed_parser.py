@@ -1,14 +1,27 @@
 #!/usr/bin/env python3
 
 ######################################################
+# Constants
+######################################################
+
+PREFIX = '(\$|[0-9]+|\/.*\/)'
+RANGE_PREFIX = f'({PREFIX},)?({PREFIX})?'
+
+# Regexes for commands
+P_COMMAND_REGEX = f'^{RANGE_PREFIX}p$'
+Q_COMMAND_REGEX = f'^{RANGE_PREFIX}q$'
+D_COMMAND_REGEX = f'^{RANGE_PREFIX}d$'
+A_COMMAND_REGEX = f'^{RANGE_PREFIX}a.+$'
+I_COMMAND_REGEX = f'^{RANGE_PREFIX}i.+$'
+C_COMMAND_REGEX = f'^{RANGE_PREFIX}c.+$'
+S_COMMAND_REGEX = f'^{RANGE_PREFIX}s.+g?$'
+
+######################################################
 # Sed Command Parser Class
 ######################################################
 
 import sys
 import re
-
-# Possible prefix regex
-PREFIX = '(\$|[0-9]+|\/.*\/)'
 
 class SedParser():
     def __init__(self, sed):
@@ -27,39 +40,34 @@ class SedParser():
 
 def format_command(sed):
 
+    # Format raw sed command
     def format_sed(sed, cmd, delimiter='/'):
         pre, cmd, post = get_pre_and_postfix(sed, cmd, delimiter)
         suffix = categorise_suffix(post, delimiter)
         if cmd in ['a', 'i', 'c']:
-            suffix = re.search(f'^({PREFIX},)?({PREFIX})?{cmd}(.+)$', sed).group(5).strip()
+            suffix = re.search(f'^{RANGE_PREFIX}{cmd}(.+)$', sed).group(5).strip()
         return {
             "prefix": categorise_prefix(pre),
             "command": cmd,
             "postfix": suffix
         }
 
-    if sed == '': 
-        return format_sed(sed, '')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?p$', sed):
-        return format_sed(sed, 'p')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?q$', sed):
-        return format_sed(sed, 'q')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?d$', sed):
-        return format_sed(sed, 'd')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?a.+$', sed):
-        return format_sed(sed, 'a')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?i.+$', sed):
-        return format_sed(sed, 'i')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?c.+$', sed):
-        return format_sed(sed, 'c')
-    elif re.search(f'^({PREFIX},)?({PREFIX})?s.+g?$', sed):
-        d = re.search('s(\S).*g?$', sed).group(1)
-        d = replace_delimiter(d)
-        if not re.search(f'^({PREFIX},)?({PREFIX})?s{d}.+{d}.*{d}g?$', sed):
+    # Validate s command postfix
+    if re.search(S_COMMAND_REGEX, sed):
+        d = replace_delimiter(re.search('s(\S).*g?$', sed).group(1))
+        if not re.search(f'^{RANGE_PREFIX}s{d}.+{d}.*{d}g?$', sed):
             throw_error()
-        return format_sed(sed, 's', d)
-    else:
-        throw_error()
+
+    # Handle cases
+    if sed == '': return format_sed(sed, '')
+    elif re.search(P_COMMAND_REGEX, sed): return format_sed(sed, 'p')
+    elif re.search(Q_COMMAND_REGEX, sed): return format_sed(sed, 'q')
+    elif re.search(D_COMMAND_REGEX, sed): return format_sed(sed, 'd')
+    elif re.search(A_COMMAND_REGEX, sed): return format_sed(sed, 'a')
+    elif re.search(I_COMMAND_REGEX, sed): return format_sed(sed, 'i')
+    elif re.search(C_COMMAND_REGEX, sed): return format_sed(sed, 'c')
+    elif re.search(S_COMMAND_REGEX, sed): return format_sed(sed, 's', d)
+    else: throw_error()
     
 ######################################################
 # Helpers
@@ -88,7 +96,7 @@ def is_convertible_to_int(num):
 # e.g. 2s/a// => (2, s, '/a//')
 def get_pre_and_postfix(sed, cmd, d):
     d = replace_delimiter(d)
-    prefix = re.search(f'^(({PREFIX},)?({PREFIX})?){cmd}', sed)
+    prefix = re.search(f'^({RANGE_PREFIX}){cmd}', sed)
     postfix = re.search(f'{cmd}({d}.+{d}.*{d}g?)$', sed)
     return (
         prefix.group(1) if prefix else '', 
