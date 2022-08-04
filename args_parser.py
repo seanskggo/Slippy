@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 
 ######################################################
+# Constants
+######################################################
+
+######################################################
+# Constants
+######################################################
+
+PREFIX = '(\$|[0-9]+|\/.*\/)'
+COMMAND_REGEX = f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?(#.*)?$'
+
+######################################################
 # Argument Parser Class
 ######################################################
 
@@ -9,9 +20,8 @@ import re
 
 class ArgsParser():
     def __init__(self, arg_list):
-        if len(arg_list) < 1:
-            print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]", file=sys.stderr)
-            sys.exit(1)
+
+        if len(arg_list) < 1: throw_usage_error()
 
         self.replace_file_with_output = False
         self.print_input_lines = True
@@ -37,17 +47,14 @@ class ArgsParser():
                 with open(file, 'r') as f: 
                     PREFIX = '(\$|[0-9]+|\/.*\/)'
                     for index, command in enumerate(f):
-                        if not re.search(f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?(#.*)?$', re.sub(' ', '', command)):
+                        if not re.search(COMMAND_REGEX, re.sub(' ', '', command)):
                             code = 1
                             sys.exit(1)
                         commands = commands + ';' + command 
                     commands = commands.strip(';')
             except:
-                if code == 1:
-                    print(f"slippy: file commands.slippy line {index + 1}: invalid command", file=sys.stderr)
-                else:
-                    print("slippy: error", file=sys.stderr)
-                sys.exit(1)
+                if code == 1: throw_command_error(index)
+                else: throw_generic_error()
             self.sed_command = commands
         else:
             commands = arg_list.pop(0)
@@ -58,13 +65,7 @@ class ArgsParser():
         self.sed_command = re.sub('#.*', '', self.sed_command)
         self.sed_command = re.sub('\n', ';', self.sed_command)
         self.first_file = arg_list[0] if arg_list else None
-
-        input = []
-        for file in arg_list:
-            with open(file, 'r') as f:
-                for line in f:
-                    input.append(line)
-        self.files = input
+        self.files = get_input_from_files(arg_list)
         if not self.files and len(arg_list) == 0:
             self.is_stdin = True
 
@@ -84,11 +85,32 @@ class ArgsParser():
         if self.is_stdin:
             line = sys.stdin.readline()
             return line if line else None
-        else:
-            if self.files:
-                return self.files.pop(0)
-            else: 
-                return ''
+        if self.files: return self.files.pop(0)
+        else:  return ''
 
     def get_first_filename(self):
         return self.first_file
+
+######################################################
+# Helper Functions
+######################################################
+
+def throw_usage_error():
+    print("usage: slippy [-i] [-n] [-f <script-file> | <sed-command>] [<files>...]", file=sys.stderr)
+    sys.exit(1)
+
+def throw_command_error(index):
+    print(f"slippy: file commands.slippy line {index + 1}: invalid command", file=sys.stderr)
+    sys.exit(1)
+
+def throw_generic_error():
+    print("slippy: error", file=sys.stderr)
+    sys.exit(1)
+
+def get_input_from_files(files):
+    input = []
+    for file in files:
+        with open(file, 'r') as f:
+            for line in f:
+                input.append(line)
+    return input

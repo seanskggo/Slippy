@@ -1,4 +1,4 @@
-for i in $(seq 0 9)
+for i in $(seq 0 "$1")
 do 
     if [ -f tests/test0"$i".sh ]
     then
