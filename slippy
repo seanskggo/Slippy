@@ -97,7 +97,6 @@ def handle_range_modify(lambda_func, command, count, is_end):
 # Cases
 ######################################################
 
-# Handle q case. Return a boolean to indicate termination or continuation
 def q(command, line, count, is_end):
     global running, output
     # Range prefix is not allowed with q command
@@ -108,7 +107,6 @@ def q(command, line, count, is_end):
         return 
     running = True
 
-# Handle p case. Return a boolean to indicate termination or 
 def p(command, line, count, is_end):
     global range, output, current_line
     def lambda_func():
@@ -181,6 +179,7 @@ while True:
     else:
         buffer[-1][-1] = True
 
+    # Execute command handling logic
     current_line, is_end = buffer.pop(0)
     if args_parser.should_print_input_lines():
         output.append(current_line)
