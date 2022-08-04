@@ -39,6 +39,7 @@ test_commands () {
     seq 1 50                | ./slippy -f commands.slippy        # comments -f test 
     echo "/../s/3//" > commands.slippy
     seq 1 50                | ./slippy -f commands.slippy        # regex -f test 
+    seq 1 50                | ./slippy -f nonexistent.slippy     # non-existent file -f test
 
     # Input files test
     seq 1 50 > input.slippy
@@ -85,6 +86,7 @@ make_answers () {
     seq 1 50                | 2041 slippy -f commands.slippy        # comments -f test 
     echo "/../s/3//" > commands.slippy
     seq 1 50                | 2041 slippy -f commands.slippy        # regex -f test 
+    seq 1 50                | 2041 slippy -f nonexistent.slippy     # non-existent file -f test
 
     # Input files test
     seq 1 50 > input.slippy

@@ -17,7 +17,7 @@ COMMAND_REGEX = f'^(({PREFIX},)?({PREFIX})?[pqdsaic].*g?)?(#.*)?$'
 
 import sys
 import re
-import os.path
+import os
 
 class ArgsParser():
     def __init__(self, arg_list):
@@ -103,17 +103,12 @@ def get_input_from_files(files):
     return input
 
 def get_commands_from_file(file):
-    code = 0
-    try:
-        commands = ''
-        with open(file, 'r') as f: 
-            for index, command in enumerate(f):
-                if not re.search(COMMAND_REGEX, re.sub(' ', '', command)):
-                    code = 1
-                    sys.exit(1)
-                commands = commands + ';' + command 
-            commands = commands.strip(';')
-    except:
-        if code == 1: throw_command_error(index)
-        else: throw_generic_error()
+    if not os.path.isfile(file): throw_generic_error()
+    commands = ''
+    with open(file, 'r') as f: 
+        for index, command in enumerate(f):
+            if not re.search(COMMAND_REGEX, re.sub(' ', '', command)):
+                throw_command_error(index)
+            commands = commands + ';' + command 
+        commands = commands.strip(';')
     return commands
